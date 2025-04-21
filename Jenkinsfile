@@ -1,5 +1,13 @@
 pipeline {
-    agent any
+    agent {
+        docker {
+            image 'node:14' // Optional: runs steps in this container
+        }
+    }
+
+    environment {
+        IMAGE_NAME = "sample-nodejs-app"
+    }
 
     stages {
         stage('Clone Repo') {
@@ -10,16 +18,14 @@ pipeline {
 
         stage('Build Docker Image') {
             steps {
-                script {
-                    dockerImage = docker.build("sample-nodejs-app")
-                }
+                sh "docker build -t $IMAGE_NAME ."
             }
         }
 
         stage('Run Docker Container') {
             steps {
-                sh "docker rm -f sample-nodejs-app || true"
-                sh "docker run -d -p 3000:3000 --name sample-nodejs-app sample-nodejs-app"
+                sh "docker rm -f $IMAGE_NAME || true"
+                sh "docker run -d -p 3000:3000 --name $IMAGE_NAME $IMAGE_NAME"
             }
         }
     }
