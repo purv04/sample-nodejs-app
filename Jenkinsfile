@@ -1,31 +1,22 @@
 pipeline {
-    agent {
-        docker {
-            image 'node:14' // Optional: runs steps in this container
-        }
-    }
-
-    environment {
-        IMAGE_NAME = "sample-nodejs-app"
-    }
+    agent any
 
     stages {
         stage('Clone Repo') {
             steps {
-                git url: 'https://github.com/purv04/sample-nodejs-app', branch: 'main'
+                git 'https://github.com/purv04/sample-nodejs-app'
             }
         }
 
         stage('Build Docker Image') {
             steps {
-                sh "docker build -t $IMAGE_NAME ."
+                sh 'docker build -t sample-nodejs-app .'
             }
         }
 
         stage('Run Docker Container') {
             steps {
-                sh "docker rm -f $IMAGE_NAME || true"
-                sh "docker run -d -p 3000:3000 --name $IMAGE_NAME $IMAGE_NAME"
+                sh 'docker run -d -p 3000:3000 --name sample-nodejs-app sample-nodejs-app'
             }
         }
     }
